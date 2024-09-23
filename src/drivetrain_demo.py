@@ -2,6 +2,7 @@
 Ensure all hardware components are properly connected and configured before running the program.
 This program is for the competition match.
 
+Team 63344Z
 Season 2024-2025.
 Final edit: 9.23.2024.
 """
