@@ -31,7 +31,7 @@ motor_right_front = Motor(Ports.PORT1, GearSetting.RATIO_18_1, True)  # Right fr
 motor_left_back = Motor(Ports.PORT9, GearSetting.RATIO_18_1, True)  # Left back motor
 motor_right_back = Motor(Ports.PORT2, GearSetting.RATIO_18_1, True)  # Right back motor
 intake = Motor(Ports.PORT8, GearSetting.RATIO_18_1, False)  # intake motor
-p1 = Pneumatics(Triport(Ports.PORT1))  # Pneumatic motor
+p1 = Pneumatics(DigitalOut(brain.three_wire_port.a))  # Pneumatic motor
 
 
 # sensor
@@ -41,11 +41,26 @@ p1 = Pneumatics(Triport(Ports.PORT1))  # Pneumatic motor
 mgl = MotorGroup(motor_left_front, motor_left_back)
 mgr = MotorGroup(motor_right_front, motor_right_back)
 # integrated motor groups
-# smartDrive = SmartDrive(mgl, mgr) # a sensor is needed
-
+smartDrive = SmartDrive(mgl, mgr, 0,0) # no gyro sensor
+""" sample code
+    smartDrive = SmartDrive(mgl, mgr, )
+    drivetrain = DriveTrain(left_drive_smart, right_drive_smart, 319.19, 295, 40, MM, 1)
+    
+    wheel size = 4 inches
+    track width = 295mm
+    wheelbase = 40mm
+    gear ratio = 1(input):1(output)
+    gear cartridge = 18:1
+"""
 # end of region config
 
 FULL_SPEED = 100
+
+# wait for rotation sensor to fully initialize
+wait(30, MSEC)
+
+# pneumatic valve initialization
+p1.close()
 
 def initialize_autonomous():
     # start the autonomous control tasks
@@ -97,21 +112,34 @@ def driver_control():
             
         # Pneumatic control
         valve_open = False
+        # L2 button: 
         if controller.buttonL2.pressing(): 
-            p1.open() # down button pneumatic valve extends
-            valve_open = True
-        elif controller.buttonL1.pressing(): 
-            p1.close() # up button pneumatic valve retracts
-            valve_open = False
-        elif valve_open:
-            p1.open() # valve keeps open
-        else:
-            p1.close() # valve closes
-            
+            if not valve_open:
+                p1.open()
+                valve_open = True
+                wait(1000, MSEC)
+            else:
+                p1.close()
+                valve_open = False
+                wait(1000, MSEC)
+
+        if controller.buttonL1.pressing():
+            pass
+        
         # intake control
+        # R1 button: switch intake direction
+        intake_spin_direction = True # forward
         if controller.buttonR1.pressing():
             intake.spin(REVERSE, FULL_SPEED, PERCENT)
+            intake_spin_direction = False
+            wait(30, MSEC)
+        else:
+            intake.spin(FORWARD, FULL_SPEED, PERCENT)
+            intake_spin_direction = True
+            wait(30, MSEC)
 
+        # R2 button: switch intake on/off
+        intake_spin_state = True
         if controller.buttonR2.pressing():
             intake.spin(FORWARD, FULL_SPEED, PERCENT)
 
