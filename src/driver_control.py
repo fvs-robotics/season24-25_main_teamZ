@@ -26,33 +26,33 @@ def driver_control():
         # The right arm motor and left arm motor lift up the arms at once when pressing the R1 button.
         # Then, the right arm motor and left arm motor lift down the arms at once when pressing the R2 button.
         if controller.buttonLeft.pressing():
-            launcher.spin(FORWARD, FULL_SPEED, PERCENT)
-            wait(0.9, SECONDS)
-            launcher.stop(HOLD)
+            pass
             
-        if controller.buttonL1.pressing():
-            arm_left.spin_for(REVERSE, FULL_SPEED, PERCENT)
-            arm_right.spin_for(FORWARD, FULL_SPEED, PERCENT)
-            wait(0.3, SECONDS)
-
-        elif controller.buttonL2.pressing():
-            arm_left.spin_for(FORWARD, FULL_SPEED, PERCENT)
-            arm_right.spin_for(REVERSE, FULL_SPEED, PERCENT)
-            wait(0.3, SECONDS)
-
-        elif controller.buttonR1.pressing():
+        # Pneumatic control
+        valve_open = False
+        if controller.buttonL2.pressing(): 
+            p1.open() # down button pneumatic valve extends
+            valve_open = True
+        elif controller.buttonL1.pressing(): 
+            p1.close() # up button pneumatic valve retracts
+            valve_open = False
+        elif valve_open:
+            p1.open() # valve keeps open
+        else:
+            p1.close() # valve closes
+            
+        # intake control
+        if controller.buttonR1.pressing():
             intake.spin(REVERSE, FULL_SPEED, PERCENT)
 
-        elif controller.buttonR2.pressing():
+        if controller.buttonR2.pressing():
             intake.spin(FORWARD, FULL_SPEED, PERCENT)
 
         if controller.buttonUp.pressing():
-            launcher.spin(FORWARD, FULL_SPEED, PERCENT)
+            pass
 
         if controller.buttonDown.pressing():
-            launcher.set_position(0, DEGREES)
-            launcher.stop(HOLD)
-
+            pass
         else:
             # Stop the arms only if neither ButtonL2 nor ButtonL1 is pressed
             arm_left.stop(HOLD)
