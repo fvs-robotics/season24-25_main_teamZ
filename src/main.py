@@ -20,16 +20,15 @@ motor_right_back = Motor(Ports.PORT2, GearSetting.RATIO_18_1, True)  # right bac
 intake = Motor(Ports.PORT5, GearSetting.RATIO_18_1, True)  # intake motor
 sender = Motor(Ports.PORT11, GearSetting.RATIO_18_1, True)  # sender motor
 p = DigitalOut(brain.three_wire_port.a)  # pneumatic motor
-
-
 # gyro
 # jumpA = DigitalIn(brain.three_wire_port.a)
 
 # motor groups
 mgl = MotorGroup(motor_left_front, motor_left_back)
 mgr = MotorGroup(motor_right_front, motor_right_back)
-# integrated motor groups
-# smartDrive = SmartDrive(mgl, mgr, Gyro, 319.19, 3600, 3000, MM, 1.4) # no gyro sensor
+
+# drivetrain
+# smartDrive = SmartDrive(mgl, mgr, Gyro, 319.19, 3600, 3000, MM, 1.4)
 # end of region config
 
 # Constants
@@ -65,9 +64,12 @@ def autonomous():
     """
     Autonomous control function.
     """
-    # TODO: implement autonomous control
-    pass
-
+    mgl.spin(FORWARD, 50, PERCENT)
+    mgr.spin(REVERSE, 50, PERCENT)
+    wait(0.5, SECONDS)
+    mgl.stop(COAST)
+    mgr.stop(COAST)
+    
 def driver_control():
     """
     Driver control function.
@@ -119,9 +121,9 @@ def sender_control():
     Control the sender motor based on controller input.
     """
     if controller.buttonUp.pressing():
-        sender.spin(FORWARD, FULL_SPEED, PERCENT)
+        sender.spin(FORWARD, 85, PERCENT)
     elif controller.buttonDown.pressing():
-        sender.spin(REVERSE, FULL_SPEED, PERCENT)
+        sender.spin(REVERSE, 85, PERCENT)
     else:
         sender.stop(COAST)
         

@@ -5,7 +5,7 @@ The Vex V5 program from team 63344Z.
 ## Features
 
 - **Autonomous:** In progress
-- **Driver Control:** In progress
+- **Driver Control:** Done
 
 ## Getting Started
 
@@ -19,6 +19,6 @@ The Vex V5 program from team 63344Z.
 
 ## Documentation Reference
 
-Please read [the Python documentation for Vex V5](https://www.robotmesh.com/studio/content/docs/vexv5-python/html/namespaces.html).
+Please read [the old Python documentation for Vex V5](https://www.robotmesh.com/studio/content/docs/vexv5-python/html/namespaces.html) and [the new Python documentation for Vex V5](https://api.vex.com/v5/home/index.html).
 
 Also, [the C++ documentation](https://www.robotmesh.com/studio/content/docs/vexv5-cpp/html/namespacevex.html) is helpful when you try to figure out old code.
