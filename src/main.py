@@ -20,6 +20,7 @@ motor_right_back = Motor(Ports.PORT2, GearSetting.RATIO_18_1, True)  # right bac
 intake = Motor(Ports.PORT5, GearSetting.RATIO_18_1, True)  # intake motor
 sender = Motor(Ports.PORT11, GearSetting.RATIO_18_1, True)  # sender motor
 p = DigitalOut(brain.three_wire_port.a)  # pneumatic motor
+yosi = None
 # gyro
 # jumpA = DigitalIn(brain.three_wire_port.a)
 
