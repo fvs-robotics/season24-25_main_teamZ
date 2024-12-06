@@ -15,12 +15,13 @@ brain = Brain()
 controller = Controller(PRIMARY)  # primary controller
 motor_left_front = Motor(Ports.PORT1, GearSetting.RATIO_18_1, True)  # left front motor
 motor_right_front = Motor(Ports.PORT10, GearSetting.RATIO_18_1, True)  # right front motor
+# motor_left_mid = Motor(Ports.PORT1, GearSetting.RATIO_18_1, True)  # left middle motor
+# motor_right_mid = Motor(Ports.PORT10, GearSetting.RATIO_18_1, True)  # right middle motor
 motor_left_back = Motor(Ports.PORT9, GearSetting.RATIO_18_1, True)  # left back motor
 motor_right_back = Motor(Ports.PORT2, GearSetting.RATIO_18_1, True)  # right back motor
 intake = Motor(Ports.PORT5, GearSetting.RATIO_18_1, True)  # intake motor
 sender = Motor(Ports.PORT11, GearSetting.RATIO_18_1, True)  # sender motor
 p = DigitalOut(brain.three_wire_port.a)  # pneumatic motor
-yosi = None
 # gyro
 # jumpA = DigitalIn(brain.three_wire_port.a)
 
@@ -101,8 +102,10 @@ def drivetrain_control():
     """
     motor_left_front.spin(FORWARD, controller.axis1.value() + controller.axis3.value(), PERCENT)
     motor_left_back.spin(FORWARD, controller.axis1.value() + controller.axis3.value(), PERCENT)
+    # motor_left_mid.spin(FORWARD, controller.axis1.value() + controller.axis3.value(), PERCENT)
     motor_right_front.spin(FORWARD, controller.axis1.value() - controller.axis3.value(), PERCENT)
     motor_right_back.spin(FORWARD, controller.axis1.value() - controller.axis3.value(), PERCENT)
+    # motor_right_mid.spin(FORWARD, controller.axis1.value() - controller.axis3.value(), PERCENT)
 
 def pneumatic_control():
     """
