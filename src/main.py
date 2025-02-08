@@ -15,22 +15,21 @@ brain = Brain()
 controller = Controller(PRIMARY)  # primary controller
 motor_left_front = Motor(Ports.PORT1, GearSetting.RATIO_18_1, True)  # left front motor
 motor_right_front = Motor(Ports.PORT10, GearSetting.RATIO_18_1, True)  # right front motor
-# motor_left_mid = Motor(Ports.PORT1, GearSetting.RATIO_18_1, True)  # left middle motor
-# motor_right_mid = Motor(Ports.PORT10, GearSetting.RATIO_18_1, True)  # right middle motor
-motor_left_back = Motor(Ports.PORT9, GearSetting.RATIO_18_1, True)  # left back motor
-motor_right_back = Motor(Ports.PORT2, GearSetting.RATIO_18_1, True)  # right back motor
-intake = Motor(Ports.PORT5, GearSetting.RATIO_18_1, True)  # intake motor
-sender = Motor(Ports.PORT11, GearSetting.RATIO_18_1, True)  # sender motor
-p = DigitalOut(brain.three_wire_port.a)  # pneumatic motor
+motor_left_mid = Motor(Ports.PORT2, GearSetting.RATIO_36_1, True)  # left middle motor
+motor_right_mid = Motor(Ports.PORT9, GearSetting.RATIO_18_1, True)  # right middle motor
+motor_left_back = Motor(Ports.PORT3, GearSetting.RATIO_36_1, True)  # left back motor
+motor_right_back = Motor(Ports.PORT8, GearSetting.RATIO_18_1, True)  # right back motor
+sender = Motor(Ports.PORT20, GearSetting.RATIO_18_1, True)  # sender motor
+p = DigitalOut(brain.three_wire_port.b)  # pneumatic motor
 # gyro
 # jumpA = DigitalIn(brain.three_wire_port.a)
 
 # motor groups
-mgl = MotorGroup(motor_left_front, motor_left_back)
-mgr = MotorGroup(motor_right_front, motor_right_back)
+mgl = MotorGroup(motor_left_front, motor_left_mid, motor_left_back)
+mgr = MotorGroup(motor_right_front, motor_right_mid, motor_right_back)
 
 # drivetrain
-# smartDrive = SmartDrive(mgl, mgr, Gyro, 319.19, 3600, 3000, MM, 1.4)
+drivetrain = DriveTrain(mgl, mgr, 319.19, 3600, 3000, MM, 1.4)
 # end of region config
 
 # Constants
@@ -72,12 +71,13 @@ def autonomous():
     mgl.stop(COAST)
     mgr.stop(COAST)
     
+    
+    
 def driver_control():
     """
     Driver control function.
     """
     while True:
-        intake_control()
         drivetrain_control()
         pneumatic_control()
         sender_control()
@@ -85,28 +85,35 @@ def driver_control():
         
         wait(10, MSEC)
         
-def intake_control():
+def sender_control():
     """
-    Control the intake motor based on controller input.
+    Control the sender motor based on controller input. The sender motor controls the intake.
     """
     if controller.buttonR1.pressing():  # R1 button: intake backward
-        intake.spin(FORWARD, FULL_SPEED, PERCENT)
+        sender.spin(FORWARD, FULL_SPEED, PERCENT)
     elif controller.buttonR2.pressing():  # R2 button: intake forward
-        intake.spin(REVERSE, FULL_SPEED, PERCENT)
+        sender.spin(REVERSE, FULL_SPEED, PERCENT)
     else:
-        intake.spin(REVERSE, 40, PERCENT)
-    
+        sender.stop(COAST)
+
+        
 def drivetrain_control():
     """
     Control the drivetrain motors based on controller input.
     """
-    motor_left_front.spin(FORWARD, controller.axis1.value() + controller.axis3.value(), PERCENT)
-    motor_left_back.spin(FORWARD, controller.axis1.value() + controller.axis3.value(), PERCENT)
-    # motor_left_mid.spin(FORWARD, controller.axis1.value() + controller.axis3.value(), PERCENT)
-    motor_right_front.spin(FORWARD, controller.axis1.value() - controller.axis3.value(), PERCENT)
-    motor_right_back.spin(FORWARD, controller.axis1.value() - controller.axis3.value(), PERCENT)
-    # motor_right_mid.spin(FORWARD, controller.axis1.value() - controller.axis3.value(), PERCENT)
-
+    forward_speed = controller.axis3.value()
+    turn_speed = controller.axis1.value()
+    
+    drivetrain.drive(FORWARD, forward_speed, PERCENT)
+    drivetrain.turn(RIGHT, turn_speed, PERCENT)
+    
+    # motor_left_front.spin(REVERSE, controller.axis1.value() + controller.axis3.value(), PERCENT)
+    # motor_left_back.spin(REVERSE, controller.axis1.value() + controller.axis3.value(), PERCENT)
+    # motor_left_mid.spin(REVERSE, controller.axis1.value() + controller.axis3.value(), PERCENT)
+    # motor_right_front.spin(REVERSE, controller.axis1.value() - controller.axis3.value(), PERCENT)
+    # motor_right_back.spin(REVERSE, controller.axis1.value() - controller.axis3.value(), PERCENT)
+    # motor_right_mid.spin(REVERSE, controller.axis1.value() - controller.axis3.value(), PERCENT)
+    
 def pneumatic_control():
     """
     Control the pneumatic valve based on controller input.
@@ -119,17 +126,6 @@ def pneumatic_control():
         valve_open = False
         
     p.set(valve_open)
-
-def sender_control():
-    """
-    Control the sender motor based on controller input.
-    """
-    if controller.buttonUp.pressing():
-        sender.spin(FORWARD, 85, PERCENT)
-    elif controller.buttonDown.pressing():
-        sender.spin(REVERSE, 85, PERCENT)
-    else:
-        sender.stop(COAST)
         
 def climb_control():
     """
